@@ -1,8 +1,8 @@
-﻿# Random Advice Generator
+# Random Advice Generator
 
 Full-screen landing page with a looping video hero and an advice card fed by a public API.
 
-**Live demo:** https://mister2314.github.io/Random-advice-generator/
+**Live demo:** https://random-advice-generator.vercel.app
 
 <div align="center">
 
@@ -18,7 +18,7 @@ One button pulls a random quote from `api.adviceslip.com` and drops it into a gl
 
 ## Tech stack
 
-HTML5 + CSS3 + vanilla JS (Fetch API), deployed on GitHub Pages — no build step.
+React 19 · TypeScript · Vite
 
 ## Features
 
