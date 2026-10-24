@@ -1,124 +1,33 @@
-<h1 align="center">Advice Generator</h1>
+# Random Advice Generator
 
-<p align="center"><b>A full-screen landing experience with a looping video hero and a random advice card fed by a public API.</b></p>
+Full-screen landing page with a looping video hero and an advice card fed by a public API.
 
-<p align="center">
-<a href="https://mister2314.github.io/Random-advice-generator/"><img src="https://img.shields.io/badge/Live_Demo-2ea44f?style=flat-square&logo=vercel&logoColor=white" alt="Live demo" height="28"></a>
-<img src="https://img.shields.io/badge/HTML5-e34f26?style=flat-square" alt="HTML5" height="20">
-<img src="https://img.shields.io/badge/CSS3-1572b6?style=flat-square" alt="CSS3" height="20">
-<img src="https://img.shields.io/badge/Fetch_API-f7df1e?style=flat-square" alt="Fetch API" height="20">
-</p>
+**Live demo:** https://mister2314.github.io/Random-advice-generator/
 
-<p align="center"><a href="https://mister2314.github.io/Random-advice-generator/"><b>Live demo</b></a> &nbsp;·&nbsp; <a href="#quick-start">Quick start</a> &nbsp;·&nbsp; <a href="#features">Features</a> &nbsp;·&nbsp; <a href="#architecture">Architecture</a> &nbsp;·&nbsp; <a href="#faq">FAQ</a></p>
+<img src="docs/preview.png" alt="Desktop view" width="380">
 
-<p align="center">
-  <a href="https://mister2314.github.io/Random-advice-generator/">
-    <img src="docs/demo.gif" alt="Advice Generator — animated demo" width="88%">
-  </a>
-</p>
+## What it does
 
-<p align="center"><sub>Live capture of the real build — 979 KB, loops forever.</sub></p>
+One button pulls a random quote from `api.adviceslip.com` and drops it into a glass card over a muted, looping background video. The fetch checks `response.ok` before parsing, reads the `slip` object into advice text and ID, and catches network errors instead of failing silently. It was an early exercise in combining media, layout and a real network request on a single static page.
 
-## Overview
+## Tech stack
 
-A single-screen site built around atmosphere: a muted, looping video fills the background, a glass card floats over it, and one button pulls a random piece of advice from a public API.
-
-The fetch is handled explicitly — response status is checked before parsing, the returned `slip` is split into its advice text and ID, and both are written into the card. Errors are caught and logged rather than failing silently.
-
-It was an early exercise in combining media, layout and a real network request in one page.
-
-## At a glance
-
-| Field | Detail |
-| --- | --- |
-| **Type** | Static site — no build step |
-| **Primary language** | CSS |
-| **Live demo** | [mister2314.github.io/Random-advice-generator](https://mister2314.github.io/Random-advice-generator/) |
-| **Repository** | [Mister2314/Random-advice-generator](https://github.com/Mister2314/Random-advice-generator) |
+HTML5 + CSS3 + vanilla JS (Fetch API), deployed on GitHub Pages — no build step.
 
 ## Features
 
-- Full-screen looping video hero, muted and autoplaying
-- Glass card overlay with the advice text
-- Random advice fetched from `api.adviceslip.com` on button press
-- Displays the advice ID alongside the text
-- Explicit error handling around the network request
-- Embedded Spotify playlist
-- Roboto typography, responsive layout
+- Full-screen looping `<video>` hero, muted and autoplaying
+- Advice fetched from `api.adviceslip.com` on button press; `response.ok` checked before parsing
+- Advice ID rendered alongside the quote (`Advice #224`)
+- Errors caught and logged, not swallowed
+- Embedded Spotify playlist (`<iframe>`)
 
-## Tech Stack
-
-| Layer | Technology |
-| --- | --- |
-| Markup | HTML5 (video, iframe) |
-| Styling | CSS3 |
-| Logic | Vanilla JavaScript, Fetch API |
-| Deploy | GitHub Pages |
-
-## Architecture
-
-```mermaid
-flowchart LR
-  A["Button press"] --> B["fetch()<br/>api.adviceslip.com"]
-  B --> C{"response.ok?"}
-  C -->|no| D["Error logged"]
-  C -->|yes| E["Parse slip<br/>advice + id"]
-  E --> F["Render into the card"]
-```
-
-## Screenshots
-
-| Desktop | Mobile |
-| :---: | :---: |
-| <img src="docs/preview.png" alt="Desktop view"> | <img src="docs/preview-mobile.png" alt="Mobile view" width="230"> |
-
-## Quick Start
+## Run locally
 
 ```bash
 git clone https://github.com/Mister2314/Random-advice-generator.git
 cd Random-advice-generator
-
-# open it directly
-start index.html      # Windows
-open  index.html      # macOS
-
-# or serve the folder
-npx serve .
+npx serve .        # or just open index.html
 ```
 
-## Project Structure
-
-```
-index.html — video hero, advice card and Spotify embed
-assets/js/index.js — button handler, fetch, response handling
-assets/css/style.css — hero layout and card styling
-assets/video/ — background video asset
-```
-
-## FAQ
-
-<details>
-<summary><b>Does it work offline?</b></summary>
-
-No — the advice comes from a public API, so the card needs a network connection. The layout itself renders regardless.
-
-</details>
-
-<details>
-<summary><b>What happens if the API fails?</b></summary>
-
-The response status is checked before parsing, and the error is caught and logged rather than failing silently.
-
-</details>
-
-## Roadmap
-
-- [ ] Add a loading state on the button
-- [ ] Add a copy-to-clipboard button for the advice text
-- [ ] Cache the last few quotes as a fallback
-
-## Author
-
-**Xəyal Hüseynli** — Junior Front-End Developer
-
-[Portfolio](https://hypnosdev.vercel.app) · [GitHub](https://github.com/Mister2314) · [LinkedIn](https://www.linkedin.com/in/x%C9%99yal-h%C3%BCseynli-3487b91ba/) · [xeyalhuseynli06@gmail.com](mailto:xeyalhuseynli06@gmail.com)
+The advice card needs a connection — the API is public and remote.
