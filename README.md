@@ -1,10 +1,16 @@
-# Random Advice Generator
+﻿# Random Advice Generator
 
 Full-screen landing page with a looping video hero and an advice card fed by a public API.
 
 **Live demo:** https://mister2314.github.io/Random-advice-generator/
 
-<img src="docs/preview.png" alt="Desktop view" width="380">
+<div align="center">
+
+| Desktop | Mobile |
+|---|---|
+| <img src="docs/shot-desktop.png" alt="Desktop view" width="700"> | <img src="docs/shot-mobile.png" alt="Mobile view" width="290"> |
+
+</div>
 
 ## What it does
 
