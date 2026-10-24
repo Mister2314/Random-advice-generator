@@ -2,7 +2,7 @@
 
 A quiet coffee-shop corner of the web: a dim café scene, a playlist playing in the dock, and one line of advice set in large serif type. Press the button — or just hit Space.
 
-**Live demo:** https://random-advice-generator.vercel.app
+**Live demo:** https://random-advice-generator-tawny.vercel.app
 
 <div align="center">
 
