@@ -1,6 +1,6 @@
 # Random Advice Generator
 
-Full-screen landing page with a looping video hero and an advice card fed by a public API.
+A quiet coffee-shop corner of the web: a dim café scene, a playlist playing in the dock, and one line of advice set in large serif type. Press the button — or just hit Space.
 
 **Live demo:** https://random-advice-generator.vercel.app
 
@@ -10,14 +10,14 @@ Full-screen landing page with a looping video hero and an advice card fed by a p
 
 | Desktop | Mobile |
 |---|---|
-| <img src="docs/shot-desktop.png" alt="Desktop view" width="700"> | <img src="docs/shot-mobile.png" alt="Mobile view" width="290"> |
+| <img src="docs/gate-1440.png" alt="Desktop view" width="700"> | <img src="docs/gate-390.png" alt="Mobile view" width="290"> |
 
 <details>
 <summary>More screenshots</summary>
 
 | Desktop | Mobile |
 |---|---|
-| <img src="docs/preview.png" alt="Desktop, alternate view" width="700"> | <img src="docs/preview-mobile.png" alt="Mobile, alternate view" width="290"> |
+| <img src="docs/shot-desktop.png" alt="Desktop, earlier version" width="700"> | <img src="docs/shot-mobile.png" alt="Mobile, earlier version" width="290"> |
 
 </details>
 
@@ -25,26 +25,36 @@ Full-screen landing page with a looping video hero and an advice card fed by a p
 
 ## What it does
 
-One button pulls a random quote from `api.adviceslip.com` and drops it into a glass card over a muted, looping background video. The fetch checks `response.ok` before parsing, reads the `slip` object into advice text and ID, and catches network errors instead of failing silently. It was an early exercise in combining media, layout and a real network request on a single static page.
+One keypress pulls a random slip from `api.adviceslip.com` and the advice text — the actual hero of the page — rises line by line out of typographic masks. The café video is ambience, kept dim behind a dark grade so the type always reads. The Spotify dock is the soundtrack of the scene: it stays, docked bottom-right, collapsed to a compact player on mobile.
 
 ## Tech stack
 
-React 19 · TypeScript · Vite
+React 19 · TypeScript · Vite · hand-rolled mask-reveal animation (no runtime animation deps)
 
 ## Features
 
-- Full-screen looping `<video>` hero, muted and autoplaying
-- Advice fetched from `api.adviceslip.com` on button press; `response.ok` checked before parsing
-- Advice ID rendered alongside the quote (`Advice #224`)
-- Errors caught and logged, not swallowed
-- Embedded Spotify playlist (`<iframe>`)
+- **Kinetic typographic advice line** — each word rises out of an `overflow: clip` mask, 0.9s `expo.out`, staggered 22ms; Fraunces display serif with optical sizing over Space Mono data labels
+- **Fetch choreography** — cache-busted request (`?cb=` timestamp + `no-store`), breathing ink-bar skeleton while loading, inline retry button on failure, `aria-live` announcement of every state
+- **Keyboard ritual** — `Space` or `R` generates from anywhere that isn't a control; visible focus rings; the real `<button>` keeps native activation
+- **Intersection- and visibility-aware video** — `preload="none"` with a designed poster frame; plays only on desktop-class viewports while the hero is in view and the tab is visible; pauses on `visibilitychange`; mobile and reduced-motion users get the static poster
+- **Offline memory** — the last slip is cached in `localStorage`, so a reload without a connection still shows real advice
+- **Reduced motion** — masks, skeleton pulse and video are all disabled under `prefers-reduced-motion: reduce`; the unanimated page is the complete page
+
+## Art direction
+
+Ink (`#101014`) stage, paper (`#f4f1ea`) type, one amber accent (`#e8b066`). Two type families, two easings, one orchestrated moment — the advice reveal. Everything else stays still so the text can be read.
 
 ## Run locally
 
 ```bash
 git clone https://github.com/Mister2314/Random-advice-generator.git
 cd Random-advice-generator
-npx serve .        # or just open index.html
+npm install
+npm run dev
 ```
 
-The advice card needs a connection — the API is public and remote.
+## Verified
+
+`tsc --noEmit` clean · production build clean · Playwright at 390 / 768 / 1440 / 1920: zero console errors, zero failed requests, generate + retry flows exercised against a mocked API, video pause/resume on visibility change, reduced-motion pass.
+
+The advice card needs a connection — the API is public and remote. Everything else works offline.
