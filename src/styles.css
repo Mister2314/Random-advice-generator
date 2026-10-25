@@ -199,22 +199,134 @@ body {
   transform: translateX(-50%);
 }
 
-/* ---------- soundtrack dock ---------- */
+/* ---------- keep-the-slip dock ---------- */
 
-.soundtrack {
+.dock {
   position: absolute;
   z-index: 3;
   right: 24px;
   bottom: 24px;
   width: 300px;
   border-radius: 4px;
-  overflow: hidden;
+  background: rgba(16, 16, 20, 0.78);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(244, 241, 234, 0.14);
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+  font-family: "Space Mono", monospace;
 }
 
-.soundtrack iframe {
-  display: block;
-  border: 0;
+.dock-actions {
+  display: flex;
+  gap: 8px;
+  padding: 10px;
+}
+
+.dock-btn {
+  flex: 1;
+  min-height: 44px;
+  font: inherit;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--paper);
+  background: rgba(244, 241, 234, 0.08);
+  border: 1px solid rgba(244, 241, 234, 0.18);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: background 0.2s var(--ease-state), border-color 0.2s var(--ease-state);
+}
+
+.dock-btn:hover:not(:disabled) {
+  background: rgba(232, 176, 102, 0.16);
+  border-color: var(--accent);
+}
+
+.dock-btn:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.dock-btn[aria-pressed="true"] {
+  color: var(--ink);
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.dock-btn-quiet {
+  flex: 1.2;
+  color: var(--dim);
+  border-style: dashed;
+}
+
+.dock-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.dock-btn:focus-visible {
+  outline: 2px solid var(--paper);
+  outline-offset: 2px;
+}
+
+.dock-list {
+  max-height: 220px;
+  overflow-y: auto;
+  padding: 4px 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-top: 1px solid rgba(244, 241, 234, 0.12);
+}
+
+.dock-empty {
+  font-size: 0.74rem;
+  line-height: 1.5;
+  color: var(--dim);
+  padding: 6px 0;
+}
+
+.dock-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 0.76rem;
+  line-height: 1.45;
+  color: var(--paper);
+}
+
+.dock-item-id {
+  color: var(--accent);
+  margin-right: 4px;
+}
+
+.dock-item-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.dock-remove {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  font-size: 0.7rem;
+  color: var(--dim);
+  background: none;
+  border: 1px solid rgba(244, 241, 234, 0.18);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: color 0.2s var(--ease-state), border-color 0.2s var(--ease-state);
+}
+
+.dock-remove:hover {
+  color: var(--paper);
+  border-color: var(--paper);
+}
+
+.dock-remove:focus-visible {
+  outline: 2px solid var(--paper);
+  outline-offset: 2px;
 }
 
 /* ---------- responsive: mobile is its own composition ---------- */
@@ -229,15 +341,16 @@ body {
     font-size: clamp(1.7rem, 7.4vw, 2.4rem);
   }
 
-  .soundtrack {
+  .dock {
     left: 16px;
     right: 16px;
     bottom: 96px;
     width: auto;
+    background: rgba(16, 16, 20, 0.88);
   }
 
-  .soundtrack iframe {
-    height: 152px;
+  .dock-list {
+    max-height: 150px;
   }
 
   .controls {

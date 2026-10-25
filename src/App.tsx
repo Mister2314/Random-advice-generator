@@ -8,6 +8,37 @@ interface AdviceSlip {
 type Status = "idle" | "loading" | "error";
 
 const LAST_SLIP_KEY = "rag:lastSlip";
+const SAVED_KEY = "rag:savedSlips";
+
+interface SavedSlip {
+  id: number;
+  advice: string;
+}
+
+function readSaved(): SavedSlip[] {
+  try {
+    const raw = localStorage.getItem(SAVED_KEY);
+    const parsed = raw ? (JSON.parse(raw) as unknown) : null;
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter(
+      (s): s is SavedSlip =>
+        !!s &&
+        typeof s === "object" &&
+        typeof (s as SavedSlip).id === "number" &&
+        typeof (s as SavedSlip).advice === "string",
+    );
+  } catch {
+    return [];
+  }
+}
+
+function writeSaved(slips: SavedSlip[]) {
+  try {
+    localStorage.setItem(SAVED_KEY, JSON.stringify(slips));
+  } catch {
+    /* storage unavailable — non-fatal */
+  }
+}
 
 function readLastSlip(): AdviceSlip["slip"] | null {
   try {
@@ -41,6 +72,122 @@ function MaskedWords({ text, runKey }: { text: string; runKey: number }) {
         </Fragment>
       ))}
     </span>
+  );
+}
+
+/* Keep-the-slip dock: copy to clipboard and save to localStorage.
+   Replaces the third-party Spotify iframe — same corner, same weight,
+   zero external requests (evidence: third-party embeds are the top
+   Core Web Vitals cost; share/save is the retention feature for
+   advice-type tools). */
+function KeepSlipDock({
+  advice,
+  adviceId,
+  disabled,
+}: {
+  advice: string;
+  adviceId: string;
+  disabled: boolean;
+}) {
+  const [saved, setSaved] = useState<SavedSlip[]>(readSaved);
+  const [open, setOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const slipId = adviceId.startsWith("Advice #")
+    ? Number(adviceId.slice(8))
+    : null;
+  const isSaved = slipId !== null && saved.some((s) => s.id === slipId);
+
+  const copy = useCallback(async () => {
+    const text = `"${advice}" — ${adviceId}`;
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: "A line of advice", text });
+        return;
+      }
+      await navigator.clipboard.writeText(text);
+    } catch {
+      /* user dismissed share, or clipboard refused — stay quiet */
+      return;
+    }
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 1600);
+  }, [advice, adviceId]);
+
+  const toggleSave = useCallback(() => {
+    if (slipId === null || disabled) return;
+    setSaved((prev) => {
+      const next = prev.some((s) => s.id === slipId)
+        ? prev.filter((s) => s.id !== slipId)
+        : [{ id: slipId, advice }, ...prev].slice(0, 20);
+      writeSaved(next);
+      return next;
+    });
+  }, [advice, disabled, slipId]);
+
+  const remove = useCallback((id: number) => {
+    setSaved((prev) => {
+      const next = prev.filter((s) => s.id !== id);
+      writeSaved(next);
+      return next;
+    });
+  }, []);
+
+  return (
+    <aside className="dock" aria-label="Keep this slip">
+      <div className="dock-actions">
+        <button
+          className="dock-btn"
+          type="button"
+          onClick={() => void copy()}
+          disabled={disabled}
+        >
+          {copied ? "Copied" : "Copy"}
+        </button>
+        <button
+          className="dock-btn"
+          type="button"
+          onClick={toggleSave}
+          disabled={disabled}
+          aria-pressed={isSaved}
+        >
+          {isSaved ? "Saved" : "Save"}
+        </button>
+        <button
+          className="dock-btn dock-btn-quiet"
+          type="button"
+          onClick={() => setOpen((o) => !o)}
+          aria-expanded={open}
+          aria-controls="saved-list"
+        >
+          {open ? "Hide" : `Kept ${saved.length}`}
+        </button>
+      </div>
+      {open ? (
+        <div className="dock-list" id="saved-list">
+          {saved.length === 0 ? (
+            <p className="dock-empty">
+              Nothing kept yet — generate a slip, then press Save.
+            </p>
+          ) : (
+            saved.map((s) => (
+              <p className="dock-item" key={s.id}>
+                <span className="dock-item-text">
+                  <span className="dock-item-id">#{s.id}</span> {s.advice}
+                </span>
+                <button
+                  className="dock-remove"
+                  type="button"
+                  onClick={() => remove(s.id)}
+                  aria-label={`Remove advice #${s.id}`}
+                >
+                  ✕
+                </button>
+              </p>
+            ))
+          )}
+        </div>
+      ) : null}
+    </aside>
   );
 }
 
@@ -203,17 +350,7 @@ export default function App() {
           </button>
         </div>
 
-        <aside className="soundtrack" aria-label="Café soundtrack">
-          <iframe
-            title="Spotify playlist — café soundtrack"
-            src="https://open.spotify.com/embed/playlist/5o6yibJ7ztmJm2tuTpyvwt?utm_source=generator"
-            width="100%"
-            height="232"
-            frameBorder={0}
-            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-            loading="lazy"
-          />
-        </aside>
+        <KeepSlipDock advice={advice} adviceId={adviceId} disabled={status !== "idle"} />
       </main>
     </>
   );
